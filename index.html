@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>Kelas Saku</title>
+<style>
+:root{
+  --bg:#f4f7f6;--surface:#ffffff;--ink:#14231f;--muted:#5d6f69;--line:#dbe5e1;
+  --brand:#0f766e;--brand-ink:#ffffff;--brand-soft:#d9f0ec;--accent:#f59e0b;
+  --ok:#15803d;--ok-soft:#dcfce7;--bad:#b91c1c;--bad-soft:#fee2e2;
+  --r:14px;--s1:6px;--s2:10px;--s3:16px;--s4:24px;--nav:64px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0e1715;--surface:#16231f;--ink:#e6f1ee;--muted:#9bb0aa;--line:#263832;
+  --brand:#2dd4bf;--brand-ink:#04211d;--brand-soft:#12403b;--accent:#fbbf24;
+  --ok:#4ade80;--ok-soft:#12351f;--bad:#f87171;--bad-soft:#3f1717;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + var(--s3))}
+header.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:var(--s2) var(--s3);display:flex;align-items:center;gap:var(--s2);min-height:52px}
+header.top h1{font-size:1.1rem;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{padding:var(--s3);max-width:640px;margin:0 auto}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--surface);border-top:1px solid var(--line);display:flex;z-index:6}
+nav.tabs button{flex:1;border:0;background:none;color:var(--muted);font:inherit;font-size:.78rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px}
+nav.tabs button b{font-size:1.3rem;line-height:1}
+nav.tabs button.on{color:var(--brand);font-weight:600}
+h2{font-size:1.15rem;margin:var(--s3) 0 var(--s2)}
+h3{font-size:1rem;margin:var(--s3) 0 var(--s1)}
+p{margin:var(--s1) 0}
+.muted{color:var(--muted);font-size:.9rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3);margin-bottom:var(--s2)}
+.card.tap{cursor:pointer}
+.row{display:flex;align-items:center;gap:var(--s2)}
+.row>.grow{flex:1;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+button.btn,a.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 var(--s3);border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+button.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+button.btn.danger{color:var(--bad)}
+button.btn.block{width:100%}
+button.btn:disabled{opacity:.5}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{display:block;font-weight:600;margin:var(--s3) 0 var(--s1);font-size:.92rem}
+input[type=text],input[type=password],input[type=date],select,textarea{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+textarea{min-height:90px;resize:vertical}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
+.chip{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem}
+.chip.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:600}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--brand-soft);color:var(--brand);font-size:.8rem;font-weight:600}
+.msgs{display:flex;flex-direction:column;gap:var(--s2);margin-bottom:var(--s3)}
+.msg{max-width:92%;padding:10px 14px;border-radius:16px;word-wrap:break-word;overflow-wrap:anywhere}
+.msg.user{align-self:flex-end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:4px}
+.msg.assistant{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.composer{position:sticky;bottom:calc(var(--nav) + env(safe-area-inset-bottom));background:var(--bg);padding:var(--s2) 0;display:flex;gap:var(--s1);align-items:flex-end}
+.composer textarea{min-height:44px;max-height:120px;flex:1}
+.composer .btn{padding:0 12px}
+.thumb{max-width:120px;border-radius:10px;border:1px solid var(--line);display:block;margin-bottom:var(--s1)}
+.opt{display:block;width:100%;text-align:left;margin:var(--s1) 0;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;min-height:48px}
+.opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.flash{min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem;cursor:pointer;padding:var(--s4)}
+.flash.back{background:var(--brand-soft)}
+.bars{display:flex;align-items:flex-end;gap:var(--s2);height:140px;margin:var(--s3) 0}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:.75rem;color:var(--muted)}
+.bars i{display:block;width:100%;background:var(--brand);border-radius:6px 6px 0 0;min-height:3px}
+.empty{text-align:center;color:var(--muted);padding:var(--s4) var(--s3)}
+.lesson{white-space:normal}
+.tabrow{display:flex;gap:var(--s1);overflow-x:auto;padding-bottom:var(--s1);margin-bottom:var(--s2)}
+#toast{position:fixed;left:var(--s3);right:var(--s3);bottom:calc(var(--nav) + var(--s4) + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;z-index:20;display:none;text-align:center}
+#busy{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none;align-items:center;justify-content:center;padding:var(--s3)}
+#busy div{background:var(--surface);border-radius:var(--r);padding:var(--s4);text-align:center;max-width:320px}
+.spin{width:32px;height:32px;margin:0 auto var(--s2);border:4px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><h1 id="ttl">Kelas Saku</h1><span id="hdr"></span></header>
+<main id="app"></main>
+<nav class="tabs" id="nav" aria-label="Menu utama"></nav>
+<div id="toast" role="status"></div>
+<div id="busy" role="alert"><div><div class="spin"></div><span id="busymsg">Memproses…</span></div></div>
+
+<script>
+'use strict';
+/* ---------- util ---------- */
+const KEY='kelassaku_v1';
+const PROV={
+  gemini:{name:'Google Gemini (gratis)',model:'gemini-3.5-flash-lite',hint:'Buat key gratis di aistudio.google.com (menu Get API key).',ph:'AIza…'},
+  anthropic:{name:'Anthropic Claude (berbayar)',model:'claude-haiku-5-5',hint:'Buat key di console.anthropic.com. Pemakaian ditagih ke akun itu.',ph:'sk-ant-…'}
+};
+const DEF=()=>({user:null,provider:'gemini',keys:{gemini:'',anthropic:''},models:{gemini:PROV.gemini.model,anthropic:PROV.anthropic.model},preps:[],chat:[],secs:{},mode:'socratic',ans:0});
+let S=load();
+function load(){try{
+  const d=JSON.parse(localStorage.getItem(KEY)||'{}');const s=Object.assign(DEF(),d);
+  s.keys=Object.assign({gemini:'',anthropic:''},d.keys||{});s.models=Object.assign(DEF().models,d.models||{});
+  if(d.key&&!d.keys){s.keys.anthropic=d.key;s.provider='anthropic';if(d.model)s.models.anthropic=d.model}
+  if(!PROV[s.provider])s.provider='gemini';
+  return s}catch(e){return DEF()}}
+const cleanKey=s=>String(s||'').replace(/[^\x21-\x7E]/g,'');
+const KEYV=()=>cleanKey(S.keys[S.provider]);
+const MODEL=()=>S.models[S.provider]||PROV[S.provider].model;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Penyimpanan penuh. Hapus rencana lama.')}}
+const $=(s)=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function plain(s){
+  s=String(s==null?'':s).replace(/\f(?=rac)/g,'\\f').replace(/\t(?=imes|ext)/g,'\\t');
+  s=s.replace(/\$\$?([\s\S]*?)\$\$?/g,'$1').replace(/\\\(|\\\)|\\\[|\\\]/g,'');
+  s=s.replace(/(\d)\s*(\\[dt]?frac)/g,'$1 $2').replace(/\\[lc]?dots/g,'…');
+  let p;do{p=s;s=s.replace(/\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g,(m,a,b)=>{a=a.trim();b=b.trim();const w=x=>/^[\w.,]+$/.test(x)?x:'('+x+')';return w(a)+'/'+w(b)})}while(s!==p);
+  s=s.replace(/\\sqrt\s*\{([^{}]*)\}/g,'√($1)').replace(/\\text(?:bf|it)?\s*\{([^{}]*)\}/g,'$1').replace(/\\left|\\right/g,'')
+   .replace(/\\times/g,'×').replace(/\\div/g,':').replace(/\\cdot/g,'·').replace(/\\pm/g,'±').replace(/\\approx/g,'≈').replace(/\\neq?/g,'≠')
+   .replace(/\\leq?(?![a-z])/g,'≤').replace(/\\geq?(?![a-z])/g,'≥').replace(/\\pi/g,'π').replace(/\\%/g,'%').replace(/\\,|\;|\\!|\\ /g,' ')
+   .replace(/\^\{([^{}]*)\}/g,'^$1').replace(/_\{([^{}]*)\}/g,'_$1').replace(/\\([a-zA-Z]+)/g,'$1');
+  return s.replace(/(\S) {2,}/g,'$1 ');
+}
+function deepPlain(o){if(typeof o==='string')return plain(o);if(Array.isArray(o))return o.map(deepPlain);if(o&&typeof o==='object'){const r={};for(const k in o)r[k]=deepPlain(o[k]);return r}return o}
+function md(s){
+  return plain(s).split('\n').map(l=>{
+    if(/^\s*([-*_])\1{2,}\s*$/.test(l))return '<hr>';
+    l=l.replace(/^\s{0,3}#{1,6}\s+(.*)$/,'**$1**').replace(/^\s*[*-]\s+/,'• ');
+    return esc(l).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  }).join('<br>').replace(/(<br>)?<hr>(<br>)?/g,'<hr>');
+}
+const MATHRULE=' Tulis matematika sebagai teks biasa tanpa LaTeX: pecahan a/b, pecahan campuran seperti 5 2/7, kali ×, bagi :, pangkat ^. Jangan memakai tanda $ atau \\, jangan memakai judul # atau garis ---, jangan memakai tabel. Boleh daftar bernomor, tanda • dan **tebal**.';
+const uid=()=>Math.random().toString(36).slice(2,10);
+function today(d){const t=d?new Date(d):new Date();return new Date(t.getTime()-t.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function daysLeft(date){if(!date)return null;return Math.ceil((new Date(date+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5)}
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3500)}
+function busy(m){$('#busymsg').textContent=m||'Memproses…';$('#busy').style.display=m===false?'none':'flex'}
+const LEVELS={sd:'SD',smp:'SMP',sma:'SMA',kuliah:'kuliah'};
+const lvl=()=>LEVELS[(S.user&&S.user.level)||'sma']||'SMA';
+
+/* ---------- AI ---------- */
+function toGemini(messages){
+  return messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:(Array.isArray(m.content)?m.content:[{type:'text',text:m.content}]).map(b=>b.type==='text'?{text:b.text}:{inlineData:{mimeType:b.source.media_type,data:b.source.data}})}));
+}
+async function ai(system,messages,max,json){
+  const key=KEYV();
+  if(!key)throw new Error('Isi API key dulu di Pengaturan.');
+  const gem=S.provider==='gemini';
+  let r;
+  try{
+    if(gem){
+      const gc={maxOutputTokens:Math.min(16000,(max||1800)*3)};if(json)gc.responseMimeType='application/json';
+      r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(MODEL())+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':key},body:JSON.stringify({systemInstruction:{parts:[{text:system+MATHRULE}]},contents:toGemini(messages),generationConfig:gc})});
+    }else{
+      r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:MODEL(),max_tokens:max||1800,system:system+MATHRULE,messages:messages})});
+    }
+  }catch(e){
+    const m=String(e&&e.message||e);
+    if(/header|ISO-8859|Latin|character/i.test(m))throw new Error('API key mengandung karakter tidak valid. Hapus lalu tempel ulang key-nya.');
+    if(navigator.onLine===false)throw new Error('HP sedang tidak terhubung ke internet.');
+    throw new Error('Tidak bisa menghubungi server AI ('+m+'). Jika aplikasi dibuka dari file di HP, unggah ke hosting HTTPS lalu buka lewat alamatnya.');
+  }
+  if(!r.ok){
+    let msg='';try{const e=await r.json();msg=(e.error&&e.error.message)||''}catch(_){}
+    if(r.status===401||(gem&&/API key|API_KEY/i.test(msg)))throw new Error('API key salah. Periksa di Pengaturan.');
+    if(r.status===429)throw new Error(gem?'Batas pemakaian gratis tercapai. Tunggu sebentar lalu coba lagi.':'Terlalu banyak permintaan. Coba lagi sebentar.');
+    if(gem&&r.status===404)throw new Error('Model "'+MODEL()+'" tidak ditemukan. Ganti nama model di Pengaturan.');
+    if(gem&&r.status===403)throw new Error('Akses ditolak. Periksa API key di AI Studio.');
+    throw new Error('AI gagal menjawab (kode '+r.status+').');
+  }
+  const j=await r.json();
+  if(gem){
+    const c=j.candidates&&j.candidates[0];
+    const t=c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||'').join(''):'';
+    if(!t)throw new Error('AI tidak memberi jawaban (mungkin diblokir). Coba ubah pertanyaannya.');
+    return json?t:plain(t);
+  }
+  const ta=(j.content||[]).map(c=>c.text||'').join('');
+  return json?ta:plain(ta);
+}
+async function aiJSON(system,text,max){
+  const out=await ai(system+' Balas HANYA dengan satu objek JSON valid, tanpa teks lain.',[{role:'user',content:text}],max||3000,true);
+  const a=out.indexOf('{'),b=out.lastIndexOf('}');
+  if(a<0||b<a)throw new Error('Jawaban AI tidak terbaca. Coba lagi.');
+  try{return deepPlain(JSON.parse(out.slice(a,b+1)))}catch(e){throw new Error('Jawaban AI terpotong. Coba lagi.')}
+}
+function resizeImage(file){
+  return new Promise((res,rej)=>{
+    const img=new Image();const url=URL.createObjectURL(file);
+    img.onload=()=>{const m=1400;let w=img.width,h=img.height;const k=Math.min(1,m/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+      const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',.85))};
+    img.onerror=()=>rej(new Error('Foto tidak bisa dibaca.'));img.src=url;
+  });
+}
+function fileB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej(new Error('File tidak bisa dibaca.'));r.readAsDataURL(file)})}
+async function extractText(file){
+  if(file.type==='text/plain'||/\.txt$/i.test(file.name))return await file.text();
+  let block;
+  if(file.type==='application/pdf'){block={type:'document',source:{type:'base64',media_type:'application/pdf',data:await fileB64(file)}}}
+  else if(file.type.indexOf('image/')===0){const d=await resizeImage(file);block={type:'image',source:{type:'base64',media_type:'image/jpeg',data:d.split(',')[1]}}}
+  else throw new Error('Format '+file.name+' belum didukung. Pakai PDF, foto, atau teks.');
+  return await ai('Kamu alat penyalin. Salin seluruh isi tulisan pada berkas secara lengkap dan rapi sebagai teks biasa. Jangan menambah komentar.',[{role:'user',content:[block,{type:'text',text:'Salin semua isi berkas ini.'}]}],4000);
+}
+
+/* ---------- state & helpers ---------- */
+let V={name:'home'};let Q=null;let X=null;let O=null;let pendingImg=null;let timer=null;let CI=0,flip=false;
+function go(name,id,tid,tab){clearInterval(timer);V={name:name,id:id,tid:tid,tab:tab};render();window.scrollTo(0,0)}
+const prepOf=id=>S.preps.find(p=>p.id===id);
+function mastery(t){
+  const c=t.content;if(!c)return 0;
+  const n=(c.cards||[]).length+(c.quiz||[]).length+(c.tf||[]).length;if(!n)return 0;
+  let s=0;for(const k in (t.res||{}))s+=t.res[k]?1:0;return Math.min(100,Math.round(100*s/n));
+}
+function prepMastery(p){if(!p.topics.length)return 0;return Math.round(p.topics.reduce((a,t)=>a+mastery(t),0)/p.topics.length)}
+function materialText(p,max){return p.materials.map(m=>'## '+m.name+'\n'+m.text).join('\n\n').slice(0,max||20000)}
+function minutesOn(day){return Math.round((S.secs[day]||0)/60)}
+function streak(){let n=0;const d=new Date();if((S.secs[today(d)]||0)<60)d.setDate(d.getDate()-1);while((S.secs[today(d)]||0)>=60){n++;d.setDate(d.getDate()-1)}return n}
+function badges(){
+  const st=streak(),best=S.preps.reduce((a,p)=>Math.max(a,prepMastery(p)),0);
+  return [
+    {n:'Mulai belajar',ok:Object.keys(S.secs).length>0},
+    {n:'Streak 3 hari',ok:st>=3},
+    {n:'Streak 7 hari',ok:st>=7},
+    {n:'50 soal terjawab',ok:S.ans>=50},
+    {n:'Penguasaan 80%',ok:best>=80}
+  ];
+}
+setInterval(()=>{if(!document.hidden&&S.user&&['tutor','prep','topic','quiz','exam','oral','gaps','cards'].indexOf(V.name)>=0){const d=today();S.secs[d]=(S.secs[d]||0)+15;save()}},15000);
+
+/* ---------- speech ---------- */
+function listen(cb){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){toast('Peramban ini belum mendukung suara. Ketik saja.');return}
+  const r=new R();r.lang='id-ID';r.interimResults=false;
+  r.onresult=e=>cb(e.results[0][0].transcript);r.onerror=()=>toast('Mikrofon tidak bisa dipakai. Periksa izin.');
+  try{r.start();toast('Mendengarkan… silakan bicara')}catch(e){}
+}
+function speak(t){if(!window.speechSynthesis){toast('Suara tidak didukung');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/\*\*/g,''));u.lang='id-ID';speechSynthesis.speak(u)}
+function stopSpeak(){if(window.speechSynthesis)speechSynthesis.cancel()}
+
+/* ---------- render ---------- */
+const TABS=[['home','🏠','Beranda'],['tutor','💬','Tutor'],['prep','📚','Belajar'],['stats','📈','Statistik'],['settings','⚙️','Pengaturan']];
+function render(){
+  stopSpeak();
+  const app=$('#app');
+  $('#nav').innerHTML=S.user?TABS.map(t=>`<button class="${tabOn(t[0])?'on':''}" onclick="go('${t[0]}')" ${tabOn(t[0])?'aria-current="page"':''}><b>${t[1]}</b>${t[2]}</button>`).join(''):'';
+  $('#hdr').innerHTML='';
+  if(!S.user){$('#ttl').textContent='Selamat datang';app.innerHTML=vSetup();return}
+  const f={home:vHome,tutor:vTutor,prep:vPrepList,newprep:vNewPrep,prepd:vPrepDetail,topic:vTopic,quiz:vQuiz,gaps:vGaps,exam:vExam,examres:vExamRes,oral:vOral,stats:vStats,settings:vSettings}[V.name]||vHome;
+  app.innerHTML=f();
+}
+function tabOn(n){const m={prepd:'prep',newprep:'prep',topic:'prep',quiz:'prep',gaps:'prep',exam:'prep',examres:'prep',oral:'prep'};return (m[V.name]||V.name)===n}
+function title(t){$('#ttl').textContent=t}
+function back(to,id){return `<button class="btn" onclick="go('${to}'${id?`,'${id}'`:''})" aria-label="Kembali">←</button>`}
+
+/* ---------- setup ---------- */
+function vSetup(){return `
+<h2>Kelas Saku</h2>
+<p class="muted">Tutor pribadi dari materi belajarmu sendiri. Data tersimpan di HP ini.</p>
+<label for="sn">Nama</label><input type="text" id="sn" autocomplete="given-name">
+<label for="sl">Tingkat</label><select id="sl"><option value="sd">SD</option><option value="smp">SMP</option><option value="sma" selected>SMA</option><option value="kuliah">Kuliah</option></select>
+<label for="sp">Penyedia AI</label><select id="sp" onchange="setupProv()"><option value="gemini" selected>${PROV.gemini.name}</option><option value="anthropic">${PROV.anthropic.name}</option></select>
+<label for="sk">API key</label><input type="password" id="sk" placeholder="${PROV.gemini.ph}" autocomplete="off">
+<p class="muted" id="skh">${PROV.gemini.hint} Key hanya disimpan di HP ini dan dikirim langsung ke penyedia AI.</p>
+<button class="btn primary block" style="margin-top:16px" onclick="doSetup()">Mulai</button>`}
+function setupProv(){const v=$('#sp').value;$('#sk').placeholder=PROV[v].ph;$('#skh').textContent=PROV[v].hint+' Key hanya disimpan di HP ini dan dikirim langsung ke penyedia AI.'}
+function doSetup(){
+  const n=$('#sn').value.trim();if(!n){toast('Isi nama dulu');return}
+  S.user={name:n,level:$('#sl').value};S.provider=$('#sp').value;S.keys[S.provider]=cleanKey($('#sk').value);save();go('home');
+  if(!KEYV())toast('Isi API key di Pengaturan agar AI bisa jalan');
+}
+
+/* ---------- home ---------- */
+function vHome(){
+  title('Halo, '+esc(S.user.name));
+  const st=streak();
+  const list=S.preps.length?S.preps.map(p=>{const m=prepMastery(p),d=daysLeft(p.date);return `<div class="card tap" onclick="go('prepd','${p.id}')"><div class="row"><div class="grow"><b>${esc(p.title)}</b><div class="muted">${d==null?'':(d>=0?d+' hari lagi':'ujian lewat')} · penguasaan ${m}%</div></div></div><div class="bar" style="margin-top:8px"><i style="width:${m}%"></i></div></div>`}).join(''):'<div class="empty">Belum ada rencana belajar.</div>';
+  return `
+<div class="card row"><div class="grow"><b>🔥 Streak ${st} hari</b><div class="muted">Belajar tiap hari, minimal 1 menit.</div></div><div><b>${minutesOn(today())}</b><div class="muted">menit hari ini</div></div></div>
+<div class="grid2"><button class="btn primary" onclick="go('tutor')">💬 Tanya tutor</button><button class="btn" onclick="go('newprep')">＋ Rencana ujian</button></div>
+<h2>Latihan cepat</h2>
+<div class="row"><input type="text" id="qt" placeholder="Topik, mis. pecahan atau fotosintesis" aria-label="Topik latihan"><button class="btn" onclick="quick()">Mulai</button></div>
+<h2>Rencana belajar</h2>${list}`;
+}
+async function quick(){
+  const t=$('#qt').value.trim();if(!t){toast('Tulis topiknya dulu');return}
+  busy('Menyiapkan soal…');
+  try{
+    const j=await aiJSON('Kamu pembuat soal latihan untuk murid '+lvl()+'. Bahasa Indonesia.','Topik: '+t+'\nBuat JSON {"quiz":[{"q":"","options":["","","",""],"answer":0,"why":""}]} berisi 6 soal pilihan ganda, answer adalah indeks 0-3.',2500);
+    const items=cleanQuiz(j.quiz);if(!items.length)throw new Error('Soal tidak terbentuk. Coba lagi.');
+    busy(false);startQuiz(items,'Latihan: '+t,null,()=>go('home'));
+  }catch(e){busy(false);toast(e.message)}
+}
+function cleanQuiz(a){return (Array.isArray(a)?a:[]).filter(q=>q&&q.q&&Array.isArray(q.options)&&q.options.length>=2&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length)}
+
+/* ---------- tutor ---------- */
+function vTutor(){
+  title('Tutor');
+  const msgs=S.chat.length?S.chat.map(m=>`<div class="msg ${m.role}">${md(m.content)}</div>`).join(''):`<div class="empty">Tanya apa saja, atau foto soalnya.<br>Mode <b>Bertanya balik</b> membimbingmu pelan-pelan, mode <b>Langsung</b> memberi penyelesaian lengkap.</div>`;
+  return `
+<div class="tabrow"><button class="chip ${S.mode==='socratic'?'on':''}" onclick="setMode('socratic')">Bertanya balik</button><button class="chip ${S.mode==='solver'?'on':''}" onclick="setMode('solver')">Langsung</button><button class="chip" onclick="clearChat()">Hapus obrolan</button></div>
+<div class="msgs" id="msgs">${msgs}</div>
+${pendingImg?`<img class="thumb" src="${pendingImg}" alt="Foto soal yang akan dikirim">`:''}
+<div class="composer">
+<input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="pickImg(this)">
+<input type="file" id="gal" accept="image/*" hidden onchange="pickImg(this)">
+<button class="btn" onclick="$('#cam').click()" aria-label="Foto soal pakai kamera">📷</button>
+<button class="btn" onclick="$('#gal').click()" aria-label="Pilih foto dari galeri">🖼️</button>
+<textarea id="msg" rows="1" placeholder="Tulis pertanyaan…" aria-label="Pesan"></textarea>
+<button class="btn" onclick="listen(t=>{const m=$('#msg');m.value=(m.value+' '+t).trim()})" aria-label="Bicara">🎤</button>
+<button class="btn primary" onclick="sendChat()" aria-label="Kirim">➤</button></div>`;
+}
+function setMode(m){S.mode=m;save();render()}
+function clearChat(){S.chat=[];save();render()}
+async function pickImg(inp){const f=inp.files&&inp.files[0];if(!f)return;try{pendingImg=await resizeImage(f);render()}catch(e){toast(e.message)}}
+async function sendChat(){
+  const text=$('#msg').value.trim();if(!text&&!pendingImg)return;
+  const img=pendingImg;pendingImg=null;
+  const q=text||'Bantu selesaikan soal di foto ini langkah demi langkah.';
+  S.chat.push({role:'user',content:(img?'[foto] ':'')+q});
+  render();
+  const box=$('#msgs');box.insertAdjacentHTML('beforeend','<div class="msg assistant" id="typing">Mengetik…</div>');window.scrollTo(0,document.body.scrollHeight);
+  const sys=S.mode==='solver'
+   ?'Kamu tutor untuk murid '+lvl()+'. Beri penyelesaian lengkap langkah demi langkah dan jawaban akhir yang jelas. Bahasa Indonesia, ringkas, pakai **tebal** seperlunya.'
+   :'Kamu tutor sabar untuk murid '+lvl()+'. Jelaskan konsep langkah demi langkah, lalu ajukan SATU pertanyaan balik untuk mengecek paham. Jangan beri jawaban akhir sebelum murid mencoba, kecuali ia meminta. Bahasa Indonesia, ringkas.';
+  let hist=S.chat.slice(0,-1).slice(-10).map(m=>({role:m.role,content:m.content}));
+  while(hist.length&&hist[0].role!=='user')hist.shift();
+  const clean=[];for(const m of hist){if(clean.length&&clean[clean.length-1].role===m.role)clean[clean.length-1].content+='\n'+m.content;else clean.push(m)}
+  if(clean.length&&clean[clean.length-1].role==='user')clean.pop();
+  const content=img?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:img.split(',')[1]}},{type:'text',text:q}]:q;
+  try{
+    const out=await ai(sys,clean.concat([{role:'user',content:content}]),1500);
+    S.chat.push({role:'assistant',content:out});
+  }catch(e){S.chat.pop();toast(e.message)}
+  S.chat=S.chat.slice(-40);save();render();window.scrollTo(0,document.body.scrollHeight);
+}
+
+/* ---------- prep list / new ---------- */
+function vPrepList(){
+  title('Belajar');
+  const list=S.preps.length?S.preps.map(p=>{const m=prepMastery(p),d=daysLeft(p.date);return `<div class="card tap" onclick="go('prepd','${p.id}')"><b>${esc(p.title)}</b><div class="muted">${esc(p.subject||'')} ${d==null?'':'· '+(d>=0?d+' hari lagi':'ujian lewat')} · ${p.topics.length} topik</div><div class="bar" style="margin-top:8px"><i style="width:${m}%"></i></div></div>`}).join(''):'<div class="empty">Buat rencana dari catatan, PDF, atau foto bukumu.</div>';
+  return `<button class="btn primary block" onclick="go('newprep')">＋ Rencana ujian baru</button><h2>Rencanamu</h2>${list}`;
+}
+function vNewPrep(){
+  title('Rencana baru');
+  return `
+<label for="pt">Nama ujian</label><input type="text" id="pt" placeholder="mis. Ulangan Matematika Bab 3">
+<label for="ps">Mata pelajaran</label><input type="text" id="ps" placeholder="mis. Matematika">
+<div class="grid2"><div><label for="pd">Tanggal ujian</label><input type="date" id="pd"></div><div><label for="pg">Target nilai</label><input type="text" id="pg" placeholder="mis. 85"></div></div>
+<label for="pf">Materi: PDF, foto catatan, atau teks</label><input type="file" id="pf" multiple accept="application/pdf,image/*,.txt">
+<label for="pn">Atau tempel catatan di sini</label><textarea id="pn" placeholder="Tempel isi catatan…"></textarea>
+<p class="muted">AI membaca materimu, memecahnya jadi topik, lalu membuat pelajaran, flashcard, dan soal dari materi itu saja.</p>
+<button class="btn primary block" style="margin-top:16px" onclick="createPrep()">Buat rencana</button>
+<button class="btn block" style="margin-top:8px" onclick="go('prep')">Batal</button>`;
+}
+async function createPrep(){
+  const title_=$('#pt').value.trim();if(!title_){toast('Isi nama ujian');return}
+  const files=[...($('#pf').files||[])],note=$('#pn').value.trim();
+  if(!files.length&&!note){toast('Tambahkan materi: file atau catatan');return}
+  const mats=[];
+  try{
+    if(note)mats.push({name:'Catatan',text:note});
+    for(let i=0;i<files.length;i++){busy('Membaca materi '+(i+1)+' dari '+files.length+'…');mats.push({name:files[i].name,text:await extractText(files[i])})}
+    busy('Menyusun topik…');
+    const all=mats.map(m=>'## '+m.name+'\n'+m.text).join('\n\n').slice(0,24000);
+    const j=await aiJSON('Kamu perencana belajar untuk murid '+lvl()+'. Bahasa Indonesia.','Materi:\n'+all+'\n\nBagi materi menjadi 4 sampai 8 topik belajar berurutan. Balas {"topics":[{"title":"","ringkas":"satu kalimat"}]}',1800);
+    const topics=(Array.isArray(j.topics)?j.topics:[]).filter(t=>t&&t.title).slice(0,8).map(t=>({id:uid(),title:String(t.title),ringkas:String(t.ringkas||''),content:null,res:{}}));
+    if(!topics.length)throw new Error('Topik tidak terbentuk. Periksa materinya.');
+    const p={id:uid(),title:title_,subject:$('#ps').value.trim(),date:$('#pd').value,target:$('#pg').value.trim(),materials:mats,topics:topics,exams:[]};
+    S.preps.unshift(p);save();busy(false);go('prepd',p.id);
+  }catch(e){busy(false);toast(e.message)}
+}
+function vPrepDetail(){
+  const p=prepOf(V.id);if(!p){return '<div class="empty">Rencana tidak ditemukan.</div>'}
+  title(p.title);$('#hdr').innerHTML=back('prep');
+  const m=prepMastery(p),d=daysLeft(p.date);
+  const tl=p.topics.map(t=>{const mm=mastery(t);return `<div class="card tap" onclick="go('topic','${p.id}','${t.id}')"><div class="row"><div class="grow"><b>${esc(t.title)}</b><div class="muted">${esc(t.ringkas)}</div></div><span class="pill">${mm}%</span></div><div class="bar" style="margin-top:8px"><i style="width:${mm}%"></i></div></div>`}).join('');
+  const last=p.exams.length?p.exams[p.exams.length-1]:null;
+  return `
+<div class="card"><div class="row"><div class="grow"><b>Penguasaan ${m}%</b><div class="muted">${p.target?'Target '+esc(p.target)+' · ':''}${d==null?'':(d>=0?d+' hari lagi':'ujian sudah lewat')}${last?' · ujian tulis terakhir '+last.score+'%':''}</div></div></div><div class="bar" style="margin-top:8px"><i style="width:${m}%"></i></div></div>
+<div class="grid2"><button class="btn" onclick="go('gaps','${p.id}')">🔍 Celah</button><button class="btn" onclick="repeatWrong('${p.id}')">🔁 Pengulangan</button><button class="btn" onclick="startExam('${p.id}')">📝 Ujian tulis</button><button class="btn" onclick="startOral('${p.id}')">🎤 Ujian lisan</button></div>
+<h2>Topik</h2>${tl}
+<button class="btn danger block" style="margin-top:16px" onclick="delPrep('${p.id}')">Hapus rencana ini</button>`;
+}
+function delPrep(id){if(!confirm('Hapus rencana ini beserta kemajuannya?'))return;S.preps=S.preps.filter(p=>p.id!==id);save();go('prep')}
+
+/* ---------- topic ---------- */
+function vTopic(){
+  const p=prepOf(V.id);const t=p&&p.topics.find(x=>x.id===V.tid);if(!t)return '<div class="empty">Topik tidak ditemukan.</div>';
+  title(t.title);$('#hdr').innerHTML=back('prepd',p.id);
+  if(!t.content)return `<div class="card"><p>${esc(t.ringkas)}</p></div><button class="btn primary block" onclick="genTopic('${p.id}','${t.id}')">Buat materi belajar</button><p class="muted">AI membuat pelajaran, flashcard, kuis, dan soal benar/salah dari materimu.</p>`;
+  const tab=V.tab||'lesson';
+  const tabs=[['lesson','Pelajaran'],['cards','Flashcard'],['quiz','Kuis'],['tf','Benar/Salah']].map(x=>`<button class="chip ${tab===x[0]?'on':''}" onclick="go('topic','${p.id}','${t.id}','${x[0]}')">${x[1]}</button>`).join('');
+  let body='';
+  if(tab==='lesson')body=`<div class="card lesson">${md(t.content.lesson)}</div><button class="btn block" onclick="speak(prepOf('${p.id}').topics.find(x=>x.id==='${t.id}').content.lesson)">🔊 Dengarkan</button><button class="btn block" style="margin-top:8px" onclick="stopSpeak()">Berhenti</button>`;
+  if(tab==='cards')body=vCards(t,p);
+  if(tab==='quiz')body=`<div class="card"><b>${t.content.quiz.length} soal pilihan ganda</b></div><button class="btn primary block" onclick="topicQuiz('${p.id}','${t.id}','q')">Mulai kuis</button>`;
+  if(tab==='tf')body=`<div class="card"><b>${t.content.tf.length} pernyataan benar/salah</b></div><button class="btn primary block" onclick="topicQuiz('${p.id}','${t.id}','t')">Mulai</button>`;
+  return `<div class="tabrow">${tabs}</div>${body}`;
+}
+async function genTopic(pid,tid){
+  const p=prepOf(pid),t=p.topics.find(x=>x.id===tid);busy('Membuat materi topik…');
+  try{
+    const j=await aiJSON('Kamu pembuat materi belajar untuk murid '+lvl()+'. Gunakan HANYA materi yang diberikan. Bahasa Indonesia.',
+     'Topik: '+t.title+'\nRingkas: '+t.ringkas+'\n\nMateri:\n'+materialText(p,20000)+'\n\nBuat JSON: {"lesson":"penjelasan runtut 250-400 kata, boleh **tebal**","cards":[{"q":"","a":""}] (8 kartu),"quiz":[{"q":"","options":["","","",""],"answer":0,"why":""}] (6 soal, answer indeks 0-3),"tf":[{"s":"pernyataan","benar":true,"why":""}] (6 butir)}',4500);
+    const quiz=cleanQuiz(j.quiz),cards=(Array.isArray(j.cards)?j.cards:[]).filter(c=>c&&c.q&&c.a),tf=(Array.isArray(j.tf)?j.tf:[]).filter(x=>x&&x.s&&typeof x.benar==='boolean');
+    if(!j.lesson||!quiz.length||!cards.length||!tf.length)throw new Error('Materi belum lengkap. Coba lagi.');
+    t.content={lesson:String(j.lesson),cards:cards,quiz:quiz,tf:tf};t.res={};save();busy(false);go('topic',pid,tid,'lesson');
+  }catch(e){busy(false);toast(e.message)}
+}
+function vCards(t,p){
+  const c=t.content.cards;if(CI>=c.length){return `<div class="card empty">Semua kartu selesai.</div><button class="btn block" onclick="CI=0;flip=false;render()">Ulangi</button>`}
+  const k=c[CI];
+  return `<p class="muted">Kartu ${CI+1} dari ${c.length}</p><div class="card flash ${flip?'back':''}" role="button" tabindex="0" onclick="flip=!flip;render()" onkeydown="if(event.key==='Enter')this.click()">${esc(flip?k.a:k.q)}</div>
+${flip?`<div class="grid2"><button class="btn" onclick="cardRes('${p.id}','${t.id}',0)">Belum tahu</button><button class="btn primary" onclick="cardRes('${p.id}','${t.id}',1)">Sudah tahu</button></div>`:'<p class="muted" style="text-align:center">Ketuk kartu untuk melihat jawaban</p>'}`;
+}
+function cardRes(pid,tid,ok){const t=prepOf(pid).topics.find(x=>x.id===tid);t.res['c'+CI]=ok;S.ans++;save();CI++;flip=false;render()}
+function topicQuiz(pid,tid,kind){
+  const p=prepOf(pid),t=p.topics.find(x=>x.id===tid);
+  const src=kind==='q'?t.content.quiz.map((q,i)=>({q:q.q,options:q.options,answer:q.answer,why:q.why,key:'q'+i})):t.content.tf.map((x,i)=>({q:x.s,options:['Benar','Salah'],answer:x.benar?0:1,why:x.why,key:'t'+i}));
+  startQuiz(src,t.title,(it,ok)=>{t.res[it.key]=ok?1:0;save()},()=>go('topic',pid,tid,kind==='q'?'quiz':'tf'));
+}
+function repeatWrong(pid){
+  const p=prepOf(pid);const items=[];
+  p.topics.forEach(t=>{if(!t.content)return;
+    t.content.quiz.forEach((q,i)=>{if(t.res['q'+i]===0)items.push({q:q.q,options:q.options,answer:q.answer,why:q.why,key:'q'+i,t:t})});
+    t.content.tf.forEach((x,i)=>{if(t.res['t'+i]===0)items.push({q:x.s,options:['Benar','Salah'],answer:x.benar?0:1,why:x.why,key:'t'+i,t:t})});
+  });
+  if(!items.length){toast('Belum ada soal yang salah untuk diulang');return}
+  startQuiz(items,'Pengulangan',(it,ok)=>{it.t.res[it.key]=ok?1:0;save()},()=>go('prepd',pid));
+}
+
+/* ---------- quiz runner ---------- */
+function startQuiz(items,ttl,onAns,onBack){Q={items:items,i:0,ok:0,sel:null,ttl:ttl,onAns:onAns,onBack:onBack};V={name:'quiz'};render();window.scrollTo(0,0)}
+function vQuiz(){
+  title(Q.ttl);$('#hdr').innerHTML='<button class="btn" onclick="Q.onBack()" aria-label="Keluar">✕</button>';
+  const it=Q.items[Q.i];
+  if(!it)return `<div class="card empty"><h2>Selesai</h2><p>Skor ${Q.ok} dari ${Q.items.length} (${Math.round(100*Q.ok/Q.items.length)}%)</p></div><button class="btn primary block" onclick="Q.onBack()">Selesai</button><button class="btn block" style="margin-top:8px" onclick="startQuiz(Q.items,Q.ttl,Q.onAns,Q.onBack)">Ulangi</button>`;
+  const opts=it.options.map((o,n)=>{let c='opt';if(Q.sel!==null){if(n===it.answer)c+=' ok';else if(n===Q.sel)c+=' bad'}return `<button class="${c}" onclick="pickOpt(${n})" ${Q.sel!==null?'disabled':''}>${esc(o)}</button>`}).join('');
+  const fb=Q.sel!==null?`<div class="card" style="margin-top:8px"><b>${Q.sel===it.answer?'Benar':'Belum tepat'}</b><p>${md(it.why||'')}</p></div><button class="btn primary block" onclick="Q.i++;Q.sel=null;render()">${Q.i+1>=Q.items.length?'Lihat hasil':'Lanjut'}</button>`:'';
+  return `<p class="muted">Soal ${Q.i+1} dari ${Q.items.length}</p><div class="card"><b>${esc(it.q)}</b></div>${opts}${fb}`;
+}
+function pickOpt(n){if(Q.sel!==null)return;const it=Q.items[Q.i];Q.sel=n;const ok=n===it.answer;if(ok)Q.ok++;if(Q.onAns)Q.onAns(it,ok);S.ans++;save();render()}
+
+/* ---------- gaps ---------- */
+function vGaps(){
+  const p=prepOf(V.id);title('Celah pengetahuan');$('#hdr').innerHTML=back('prepd',p.id);
+  const s=p.topics.slice().sort((a,b)=>mastery(a)-mastery(b));
+  return `<p class="muted">Topik dengan penguasaan terendah ada di atas. Mulai dari sana.</p>`+s.map(t=>{const m=mastery(t);return `<div class="card tap" onclick="go('topic','${p.id}','${t.id}')"><div class="row"><div class="grow"><b>${esc(t.title)}</b><div class="muted">${t.content?'':'Materi belum dibuat'}</div></div><span class="pill">${m}%</span></div><div class="bar" style="margin-top:8px"><i style="width:${m}%"></i></div></div>`}).join('');
+}
+
+/* ---------- written exam ---------- */
+async function startExam(pid){
+  const p=prepOf(pid);busy('Menyusun soal ujian…');
+  try{
+    const j=await aiJSON('Kamu penyusun ujian untuk murid '+lvl()+'. Gunakan HANYA materi yang diberikan. Bahasa Indonesia.','Topik: '+p.topics.map(t=>t.title).join('; ')+'\n\nMateri:\n'+materialText(p,18000)+'\n\nBuat JSON {"mcq":[{"q":"","options":["","","",""],"answer":0,"why":""}] (6 soal),"short":[{"q":"","kunci":"jawaban ideal singkat"}] (2 soal)}',3500);
+    const mcq=cleanQuiz(j.mcq),short=(Array.isArray(j.short)?j.short:[]).filter(s=>s&&s.q&&s.kunci);
+    if(!mcq.length)throw new Error('Soal ujian tidak terbentuk. Coba lagi.');
+    X={pid:pid,mcq:mcq,short:short,end:Date.now()+20*60000,result:null};busy(false);go('exam',pid);
+    timer=setInterval(tickExam,1000);
+  }catch(e){busy(false);toast(e.message)}
+}
+function tickExam(){const l=X.end-Date.now();const el=$('#tm');if(!el)return;if(l<=0){clearInterval(timer);submitExam();return}el.textContent=String(Math.floor(l/60000)).padStart(2,'0')+':'+String(Math.floor(l/1000)%60).padStart(2,'0')}
+function vExam(){
+  title('Ujian tulis');$('#hdr').innerHTML='<b id="tm">20:00</b>';
+  const m=X.mcq.map((q,i)=>`<div class="card"><b>${i+1}. ${esc(q.q)}</b>${q.options.map((o,n)=>`<label style="font-weight:400;margin:6px 0"><input type="radio" name="m${i}" value="${n}"> ${esc(o)}</label>`).join('')}</div>`).join('');
+  const s=X.short.map((q,i)=>`<div class="card"><b>${X.mcq.length+i+1}. ${esc(q.q)}</b><textarea id="s${i}" aria-label="Jawaban soal ${X.mcq.length+i+1}"></textarea></div>`).join('');
+  return `<p class="muted">Waktu 20 menit. Jawab semua, lalu kumpulkan.</p>${m}${s}<button class="btn primary block" onclick="submitExam()">Kumpulkan</button>`;
+}
+async function submitExam(){
+  if(!X||X.result||V.name!=='exam')return;clearInterval(timer);busy('Menilai jawaban…');
+  let ok=0;const wrong=[];
+  X.mcq.forEach((q,i)=>{const r=document.querySelector('input[name="m'+i+'"]:checked');if(r&&+r.value===q.answer)ok++;else wrong.push({q:q.q,benar:q.options[q.answer],why:q.why})});
+  const ans=X.short.map((q,i)=>({q:q.q,kunci:q.kunci,jawab:($('#s'+i)||{}).value||''}));
+  let sh=[];
+  try{
+    if(ans.length){const j=await aiJSON('Kamu penilai ujian yang adil untuk murid '+lvl()+'. Bahasa Indonesia.','Nilai tiap jawaban 0-100 berdasarkan kunci. JSON {"nilai":[{"skor":0,"komentar":""}]} dalam urutan yang sama.\n'+JSON.stringify(ans),1500);sh=Array.isArray(j.nilai)?j.nilai:[]}
+  }catch(e){toast('Soal uraian tidak bisa dinilai: '+e.message)}
+  const parts=X.mcq.length+ans.length;
+  const total=(ok*100+ans.reduce((a,_,i)=>a+(Number((sh[i]||{}).skor)||0),0))/parts;
+  X.result={score:Math.round(total),mcqOk:ok,mcqN:X.mcq.length,sh:sh,ans:ans,wrong:wrong};
+  const p=prepOf(X.pid);p.exams.push({date:today(),score:X.result.score});S.ans+=parts;save();busy(false);go('examres',X.pid);
+}
+function vExamRes(){
+  const r=X.result;title('Hasil ujian');$('#hdr').innerHTML=back('prepd',X.pid);
+  return `<div class="card empty"><h2>${r.score}%</h2><p>Pilihan ganda benar ${r.mcqOk} dari ${r.mcqN}</p></div>`
+   +r.ans.map((a,i)=>`<div class="card"><b>${esc(a.q)}</b><p>Jawabanmu: ${esc(a.jawab||'(kosong)')}</p><p class="muted">Kunci: ${esc(a.kunci)}</p><p>Nilai ${Number((r.sh[i]||{}).skor)||0} · ${esc((r.sh[i]||{}).komentar||'')}</p></div>`).join('')
+   +(r.wrong.length?'<h2>Yang perlu dipelajari lagi</h2>'+r.wrong.map(w=>`<div class="card"><b>${esc(w.q)}</b><p>Jawaban benar: ${esc(w.benar)}</p><p class="muted">${esc(w.why||'')}</p></div>`).join(''):'');
+}
+
+/* ---------- oral exam ---------- */
+async function startOral(pid){
+  const p=prepOf(pid);busy('Menyiapkan pertanyaan lisan…');
+  try{
+    const j=await aiJSON('Kamu penguji lisan untuk murid '+lvl()+'. Bahasa Indonesia.','Topik: '+p.topics.map(t=>t.title).join('; ')+'\n\nMateri:\n'+materialText(p,14000)+'\n\nBuat JSON {"qs":["pertanyaan terbuka yang dijawab lisan 30-60 detik"]} berisi 3 pertanyaan.',900);
+    const qs=(Array.isArray(j.qs)?j.qs:[]).filter(Boolean).slice(0,3);if(!qs.length)throw new Error('Pertanyaan tidak terbentuk.');
+    O={pid:pid,qs:qs,i:0,sk:[],fb:null,ans:''};busy(false);go('oral',pid);
+  }catch(e){busy(false);toast(e.message)}
+}
+function vOral(){
+  title('Ujian lisan');$('#hdr').innerHTML=back('prepd',O.pid);
+  if(O.i>=O.qs.length){const avg=Math.round(O.sk.reduce((a,b)=>a+b,0)/O.sk.length);return `<div class="card empty"><h2>${avg}%</h2><p>Rata-rata nilai lisan</p></div><button class="btn primary block" onclick="go('prepd','${O.pid}')">Selesai</button>`}
+  const q=O.qs[O.i];
+  return `<p class="muted">Pertanyaan ${O.i+1} dari ${O.qs.length}</p><div class="card"><b>${esc(q)}</b></div>
+<button class="btn block" onclick="speak(O.qs[O.i])">🔊 Bacakan pertanyaan</button>
+<label for="oa">Jawabanmu (bicara atau ketik)</label><textarea id="oa" oninput="O.ans=this.value">${esc(O.ans)}</textarea>
+<div class="grid2" style="margin-top:8px"><button class="btn" onclick="listen(t=>{O.ans=(O.ans+' '+t).trim();render()})">🎤 Rekam</button><button class="btn primary" onclick="gradeOral()" ${O.fb?'disabled':''}>Nilai</button></div>
+${O.fb?`<div class="card" style="margin-top:12px"><b>Nilai ${O.fb.skor}%</b><p>${md(O.fb.umpan)}</p><p class="muted">Jawaban yang baik: ${esc(O.fb.ideal)}</p></div><button class="btn primary block" onclick="O.i++;O.ans='';O.fb=null;render()">${O.i+1>=O.qs.length?'Lihat hasil':'Lanjut'}</button>`:''}`;
+}
+async function gradeOral(){
+  if(!O.ans.trim()){toast('Jawab dulu');return}busy('Menilai jawaban…');
+  try{
+    const p=prepOf(O.pid);
+    const j=await aiJSON('Kamu penguji lisan yang adil dan menyemangati untuk murid '+lvl()+'. Gunakan materi sebagai acuan. Bahasa Indonesia.','Materi:\n'+materialText(p,10000)+'\n\nPertanyaan: '+O.qs[O.i]+'\nJawaban murid (hasil ucapan): '+O.ans+'\n\nBalas {"skor":0-100,"umpan":"umpan balik singkat","ideal":"inti jawaban yang baik"}',800);
+    const sk=Math.max(0,Math.min(100,Number(j.skor)||0));O.fb={skor:sk,umpan:String(j.umpan||''),ideal:String(j.ideal||'')};O.sk.push(sk);S.ans++;save();busy(false);render();
+  }catch(e){busy(false);toast(e.message)}
+}
+
+/* ---------- stats ---------- */
+function vStats(){
+  title('Statistik');
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push([today(d),['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()]])}
+  const mx=Math.max(10,...days.map(d=>minutesOn(d[0])));
+  const bars=days.map(d=>`<div><span>${minutesOn(d[0])}</span><i style="height:${Math.round(100*minutesOn(d[0])/mx)}%"></i><span>${d[1]}</span></div>`).join('');
+  const tot=days.reduce((a,d)=>a+minutesOn(d[0]),0);
+  const b=badges().map(x=>`<span class="chip ${x.ok?'on':''}" style="margin:0 6px 6px 0">${x.ok?'🏅':'🔒'} ${x.n}</span>`).join('');
+  return `<div class="card row"><div class="grow"><b>🔥 Streak ${streak()} hari</b><div class="muted">${tot} menit belajar dalam 7 hari</div></div></div>
+<h2>Menit belajar, 7 hari</h2><div class="bars" role="img" aria-label="Grafik menit belajar tujuh hari terakhir">${bars}</div>
+<h2>Lencana</h2><div>${b}</div>
+<h2>Laporan untuk orang tua</h2><button class="btn block" onclick="shareReport()">Salin atau bagikan laporan mingguan</button>`;
+}
+function reportText(){
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(today(d))}
+  const tot=days.reduce((a,d)=>a+minutesOn(d),0);
+  return 'Laporan belajar minggu ini — '+S.user.name+'\nWaktu belajar: '+tot+' menit\nStreak: '+streak()+' hari\nSoal dijawab (total): '+S.ans+'\n'+S.preps.map(p=>'• '+p.title+': penguasaan '+prepMastery(p)+'%'+(daysLeft(p.date)!=null&&daysLeft(p.date)>=0?', '+daysLeft(p.date)+' hari lagi':'')).join('\n');
+}
+async function shareReport(){const t=reportText();try{if(navigator.share){await navigator.share({text:t})}else{await navigator.clipboard.writeText(t);toast('Laporan disalin')}}catch(e){}}
+
+/* ---------- settings ---------- */
+function vSettings(){
+  title('Pengaturan');
+  return `
+<label for="un">Nama</label><input type="text" id="un" value="${esc(S.user.name)}">
+<label for="ul">Tingkat</label><select id="ul">${Object.keys(LEVELS).map(k=>`<option value="${k}" ${S.user.level===k?'selected':''}>${LEVELS[k]}</option>`).join('')}</select>
+<label for="up">Penyedia AI</label><select id="up" onchange="provSwitch()">${Object.keys(PROV).map(k=>`<option value="${k}" ${S.provider===k?'selected':''}>${PROV[k].name}</option>`).join('')}</select>
+<label for="uk">API key</label><input type="password" id="uk" value="${esc(KEYV())}" placeholder="${PROV[S.provider].ph}" autocomplete="off">
+<p class="muted">${PROV[S.provider].hint}</p>
+<label for="um">Model</label><input type="text" id="um" value="${esc(MODEL())}">
+<p class="muted">Kalau muncul pesan model tidak ditemukan, salin nama model terbaru dari dokumentasi penyedia.</p>
+<button class="btn primary block" style="margin-top:12px" onclick="saveSet()">Simpan</button>
+<button class="btn block" style="margin-top:8px" onclick="testKey()">Tes koneksi AI</button>
+<h2>Data</h2><p class="muted">Semua data ada di HP ini saja. Tidak ada akun, tidak ada server.</p>
+<button class="btn danger block" onclick="wipe()">Hapus semua data</button>`;
+}
+function provSwitch(){S.keys[S.provider]=cleanKey($('#uk').value);S.models[S.provider]=$('#um').value.trim()||PROV[S.provider].model;S.provider=$('#up').value;save();render()}
+function saveSet(){S.user.name=$('#un').value.trim()||S.user.name;S.user.level=$('#ul').value;S.provider=$('#up').value;S.keys[S.provider]=cleanKey($('#uk').value);S.models[S.provider]=$('#um').value.trim()||PROV[S.provider].model;save();toast('Tersimpan')}
+async function testKey(){saveSet();busy('Menguji…');try{await ai('Jawab satu kata.',[{role:'user',content:'Balas: siap'}],20);busy(false);toast('Koneksi AI berhasil')}catch(e){busy(false);toast(e.message)}}
+function wipe(){if(!confirm('Hapus SEMUA data termasuk API key?'))return;if(!confirm('Yakin? Ini tidak bisa dibatalkan.'))return;localStorage.removeItem(KEY);S=DEF();go('home')}
+
+/* ---------- boot ---------- */
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(()=>{});
+render();
+</script>
+</body>
+</html>
